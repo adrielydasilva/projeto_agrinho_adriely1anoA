@@ -1,0 +1,119 @@
+let eco = 50;
+let prod = 50;
+let pol = 20;
+let fel = 60;
+let ano = 1;
+let ativo = true;
+
+function toggleTema() {
+    document.body.classList.toggle("claro");
+}
+
+function acao(tipo) {
+    if (!ativo) return;
+
+    if (tipo === "crescer") {
+        prod += 10;
+        eco += 5;
+        pol += 10;
+        fel -= 5;
+    }
+
+    if (tipo === "tecnologia") {
+        eco -= 10;
+        pol -= 15;
+        fel += 5;
+    }
+
+    if (tipo === "reduzir") {
+        prod -= 10;
+        pol -= 10;
+        fel += 2;
+    }
+
+    atualizar();
+}
+
+function atualizar() {
+    if (!ativo) return;
+
+    ano++;
+
+    // efeitos naturais do tempo
+    pol += prod * 0.05;
+    fel -= pol * 0.02;
+    eco += prod * 0.03;
+
+    clamp();
+    verificar();
+
+    document.getElementById("eco").innerText = Math.round(eco);
+    document.getElementById("prod").innerText = Math.round(prod);
+    document.getElementById("pol").innerText = Math.round(pol);
+    document.getElementById("fel").innerText = Math.round(fel);
+    document.getElementById("ano").innerText = ano;
+
+    atualizarStatus();
+    desenhar();
+}
+
+function clamp() {
+    eco = Math.max(0, Math.min(100, eco));
+    prod = Math.max(0, Math.min(100, prod));
+    pol = Math.max(0, Math.min(100, pol));
+    fel = Math.max(0, Math.min(100, fel));
+}
+
+function verificar() {
+    if (pol >= 100 || fel <= 0) {
+        fim("💀 Game Over: O planeta entrou em colapso!");
+    }
+
+    if (ano > 80 && pol < 40 && fel > 60) {
+        fim("🏆 Vitória: Você manteve o equilíbrio sustentável!");
+    }
+}
+
+function fim(msg) {
+    ativo = false;
+    document.getElementById("status").innerText = msg;
+}
+
+function atualizarStatus() {
+    let msg = "";
+
+    if (pol > 70) msg = "⚠️ ALERTA: Poluição crítica!";
+    else if (fel < 40) msg = "⚠️ População infeliz!";
+    else msg = "✔ Sistema equilibrado";
+
+    document.getElementById("status").innerText = msg;
+}
+
+function desenhar() {
+    const canvas = document.getElementById("grafico");
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, 500, 300);
+
+    ctx.fillStyle = "#22c55e";
+    ctx.fillRect(50, 220, prod * 3, 20);
+
+    ctx.fillStyle = "#ef4444";
+    ctx.fillRect(50, 160, pol * 3, 20);
+
+    ctx.fillStyle = "#3b82f6";
+    ctx.fillRect(50, 100, eco * 3, 20);
+
+    ctx.fillStyle = "#facc15";
+    ctx.fillRect(50, 40, fel * 3, 20);
+}
+
+// suporte teclado (acessibilidade)
+document.addEventListener("keydown", (e) => {
+    if (e.key === "1") acao("crescer");
+    if (e.key === "2") acao("tecnologia");
+    if (e.key === "3") acao("reduzir");
+});
+
+// Inicialização automática do primeiro turno
+atualizar();

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sustentabilidade Global - Acessível</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0f172a;
+    color: #e2e8f0;
+    text-align: center;
+    line-height: 1.8;
+}
+
+header {
+    padding: 20px;
+    background: linear-gradient(90deg, #16a34a, #0ea5e9);
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+.painel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.card {
+    background: #1f2937;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 18px;
+}
+
+button {
+    padding: 15px;
+    margin: 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    min-width: 200px;
+}
+
+button:focus {
+    outline: 4px solid yellow;
+}
+
+.verde { background: #22c55e; }
+.azul { background: #3b82f6; }
+.vermelho { background: #ef4444; }
+
+canvas {
+    background: #0b1220;
+    width: 100%;
+    height: 300px;
+    border-radius: 10px;
+}
+
+.status {
+    font-size: 20px;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+/* 🌙 modo claro */
+body.claro {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+body.claro .card {
+    background: #e2e8f0;
+}
+
+body.claro canvas {
+    background: #ffffff;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🌍 Sustentabilidade Global</h1>
+    <p>Jogo acessível de decisões ambientais</p>
+
+    <button onclick="toggleTema()" class="azul">🌙 Alternar tema</button>
+</header>
+
+<div class="container">
+
+<div class="painel">
+    <div class="card">💰 Economia: <span id="eco">50</span></div>
+    <div class="card">🏭 Produção: <span id="prod">50</span></div>
+    <div class="card">🌫️ Poluição: <span id="pol">20</span></div>
+    <div class="card">😊 Felicidade: <span id="fel">60</span></div>
+    <div class="card">📅 Ano: <span id="ano">1</span></div>
+</div>
+
+<br>
+
+<button class="verde" onclick="acao('crescer')" tabindex="1">
+Aumentar Produção
+</button>
+
+<button class="azul" onclick="acao('tecnologia')" tabindex="2">
+Investir em Tecnologia Limpa
+</button>
+
+<button class="vermelho" onclick="acao('reduzir')" tabindex="3">
+Reduzir Poluição
+</button>
+
+<p id="status" class="status" aria-live="polite">Sistema equilibrado</p>
+
+<canvas id="grafico"></canvas>
+
+</div>
+
+<script>
+
+let eco = 50;
+let prod = 50;
+let pol = 20;
+let fel = 60;
+let ano = 1;
+let ativo = true;
+
+function toggleTema() {
+    document.body.classList.toggle("claro");
+}
+
+function acao(tipo) {
+    if (!ativo) return;
+
+    if (tipo === "crescer") {
+        prod += 10;
+        eco += 5;
+        pol += 10;
+        fel -= 5;
+    }
+
+    if (tipo === "tecnologia") {
+        eco -= 10;
+        pol -= 15;
+        fel += 5;
+    }
+
+    if (tipo === "reduzir") {
+        prod -= 10;
+        pol -= 10;
+        fel += 2;
+    }
+
+    atualizar();
+}
+
+function atualizar() {
+
+    if (!ativo) return;
+
+    ano++;
+
+    // efeitos naturais do tempo
+    pol += prod * 0.05;
+    fel -= pol * 0.02;
+    eco += prod * 0.03;
+
+    clamp();
+
+    verificar();
+
+    document.getElementById("eco").innerText = Math.round(eco);
+    document.getElementById("prod").innerText = Math.round(prod);
+    document.getElementById("pol").innerText = Math.round(pol);
+    document.getElementById("fel").innerText = Math.round(fel);
+    document.getElementById("ano").innerText = ano;
+
+    atualizarStatus();
+    desenhar();
+}
+
+function clamp() {
+    eco = Math.max(0, Math.min(100, eco));
+    prod = Math.max(0, Math.min(100, prod));
+    pol = Math.max(0, Math.min(100, pol));
+    fel = Math.max(0, Math.min(100, fel));
+}
+adrielydasilva
+function verificar() {
+    if (pol >= 100 || fel <= 0) {
+        fim("💀 Game Over: O planeta entrou em colapso!");
+    }
+
+    if (ano > 80 && pol < 40 && fel > 60) {
+        fim("🏆 Vitória: Você manteve o equilíbrio sustentável!");
+    }
+}
+
+function fim(msg) {
+    ativo = false;
+    document.getElementById("status").innerText = msg;
+}
+
+function atualizarStatus() {
+    let msg = "";
+
+    if (pol > 70) msg = "⚠️ ALERTA: Poluição crítica!";
+    else if (fel < 40) msg = "⚠️ População infeliz!";
+    else msg = "✔ Sistema equilibrado";
+
+    document.getElementById("status").innerText = msg;
+}
+
+function desenhar() {
+    const canvas = document.getElementById("grafico");
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, 500, 300);
+
+    ctx.fillStyle = "#22c55e";
+    ctx.fillRect(50, 220, prod * 3, 20);
+
+    ctx.fillStyle = "#ef4444";
+    ctx.fillRect(50, 160, pol * 3, 20);
+
+    ctx.fillStyle = "#3b82f6";
+    ctx.fillRect(50, 100, eco * 3, 20);
+
+    ctx.fillStyle = "#facc15";
+    ctx.fillRect(50, 40, fel * 3, 20);
+}
+
+// suporte teclado (acessibilidade)
+document.addEventListener("keydown", (e) => {
+    if (e.key === "1") acao("crescer");
+    if (e.key === "2") acao("tecnologia");
+    if (e.key === "3") acao("reduzir");
+});
+
+atualizar();
+
+</script>
+
+</body>
+</html>
